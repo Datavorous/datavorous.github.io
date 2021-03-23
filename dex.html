@@ -1,0 +1,45 @@
+<html>
+ <head> 
+  <title>
+      chatappsb
+</title> 
+ </head> 
+ <body>
+   Enter Chat and press enter 
+  <div> 
+   <input id="input" placeholder="message"> 
+  </div> Chat Output 
+  <div id="box"></div> 
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.28.2.min.js"></script> 
+  <script> (function() {
+        var pubnub = new PubNub({
+            publishKey: 'pub-c-8849394a-c62c-4997-b82c-42379ad0631a',
+            subscribeKey: 'sub-c-c1456674-8bc8-11eb-8ea8-a61585f8230a'
+        });
+        function $(id) {
+            return document.getElementById(id);
+        }
+        var box = $('box'),
+            input = $('input'),
+            channel = '10chat-demo';
+        pubnub.addListener({
+            message: function(obj) {
+                box.innerHTML = ('' + obj.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML
+            }
+        });
+        pubnub.subscribe({
+            channels: [channel]
+        });
+        input.addEventListener('keyup', function(e) {
+            if ((e.keyCode || e.charCode) === 13) {
+                pubnub.publish({
+                    channel: channel,
+                    message: input.value,
+                    x: (input.value = '')
+                });
+            }
+        });
+    })();
+</script> 
+ </body>
+</html>
